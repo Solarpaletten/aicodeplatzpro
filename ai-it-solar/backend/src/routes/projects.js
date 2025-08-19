@@ -15,6 +15,7 @@ router.get('/', async (req, res) => {
     });
     res.json(projects);
   } catch (error) {
+    console.error('Projects GET error:', error);
     res.status(500).json({ error: 'Failed to fetch projects' });
   }
 });
@@ -22,18 +23,30 @@ router.get('/', async (req, res) => {
 // POST /api/projects
 router.post('/', async (req, res) => {
   try {
+    console.log('Creating project with data:', req.body);
+    
     const project = await prisma.project.create({
       data: {
-        name: req.body.name || 'Demo Project',
-        description: req.body.description,
-        githubUrl: req.body.githubUrl,
+        name: req.body.name || 'Unnamed Project',
+        description: req.body.description || null,
+        githubUrl: req.body.githubUrl || null,
         language: req.body.language || 'JavaScript',
+        isPrivate: req.body.isPrivate || false,
         userId: 'default-user-id'
+      },
+      include: {
+        user: { select: { id: true, username: true, name: true } }
       }
     });
+    
+    console.log('Project created successfully:', project);
     res.status(201).json(project);
   } catch (error) {
-    res.status(400).json({ error: 'Failed to create project' });
+    console.error('Project creation error:', error);
+    res.status(400).json({ 
+      error: 'Failed to create project',
+      details: error.message 
+    });
   }
 });
 

@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -47,8 +47,8 @@ model Review {
   oldCode       String
   newCode       String
   language      String
-  riskLevel     RiskLevel   @default(LOW)
-  status        ReviewStatus @default(PENDING)
+  riskLevel     String      @default("LOW")
+  status        String      @default("PENDING")
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -76,18 +76,4 @@ model Comment {
   user     User   @relation(fields: [userId], references: [id])
   
   @@map("comments")
-}
-
-enum RiskLevel {
-  LOW
-  MEDIUM
-  HIGH
-  CRITICAL
-}
-
-enum ReviewStatus {
-  PENDING
-  IN_PROGRESS
-  APPROVED
-  REJECTED
 }
