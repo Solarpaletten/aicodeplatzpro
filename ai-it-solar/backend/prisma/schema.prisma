@@ -1,0 +1,148 @@
+// 🚀 AI IT Solar - Database Schema
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String   @unique
+  name      String?
+  avatar    String?
+  githubId  String?  @unique
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  projects    Project[]
+  reviews     Review[]
+  comments    Comment[]
+  teamMembers TeamMember[]
+  
+  @@map("users")
+}
+
+model Project {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  githubUrl   String?
+  language    String?
+  isPrivate   Boolean @default(false)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  userId   String
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reviews  Review[]
+  teamId   String?
+  team     Team?     @relation(fields: [teamId], references: [id])
+  
+  @@map("projects")
+}
+
+model Review {
+  id            String      @id @default(cuid())
+  title         String
+  description   String?
+  oldCode       String
+  newCode       String
+  language      String
+  riskLevel     RiskLevel   @default(LOW)
+  status        ReviewStatus @default(PENDING)
+  
+  // Analysis results
+  analysisData  Json?
+  aiSummary     String?
+  linesChanged  Int?
+  functionsChanged Int?
+  importsChanged   Int?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  projectId String
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  comments  Comment[]
+  
+  @@map("reviews")
+}
+
+model Comment {
+  id       String @id @default(cuid())
+  content  String
+  lineNumber Int?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  reviewId String
+  review   Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User   @relation(fields: [userId], references: [id])
+  
+  @@map("comments")
+}
+
+model Team {
+  id          String @id @default(cuid())
+  name        String
+  description String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  projects Project[]
+  members  TeamMember[]
+  
+  @@map("teams")
+}
+
+model TeamMember {
+  id   String   @id @default(cuid())
+  role TeamRole @default(MEMBER)
+  
+  joinedAt DateTime @default(now())
+  
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  teamId String
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, teamId])
+  @@map("team_members")
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ReviewStatus {
+  PENDING
+  IN_PROGRESS
+  APPROVED
+  REJECTED
+}
+
+enum TeamRole {
+  OWNER
+  ADMIN
+  MEMBER
+}

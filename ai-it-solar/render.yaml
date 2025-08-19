@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: ai-solar-frontend
+    env: node
+    buildCommand: cd frontend && npm install && npm run build
+    startCommand: cd frontend && npm run start:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+  - type: web
+    name: ai-solar-backend
+    env: node
+    buildCommand: cd backend && npm install && npm run build
+    startCommand: cd backend && npm run start:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ai-solar-db
+          property: connectionString
+
+databases:
+  - name: ai-solar-db
+    databaseName: ai_solar_production
+    user: ai_solar_user
