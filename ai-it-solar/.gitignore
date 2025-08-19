@@ -13,7 +13,7 @@ yarn-error.log*
 .env.production.local
 
 # Database
-prisma/migrations/
+prisma/migrations/dev/
 *.db
 *.sqlite
 
@@ -53,3 +53,9 @@ Thumbs.db
 # Temporary files
 tmp/
 temp/
+
+# Render specific
+.render/
+
+# Production files to keep
+!render.yaml
