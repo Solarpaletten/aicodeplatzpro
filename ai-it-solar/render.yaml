@@ -4,8 +4,8 @@ services:
     name: aicodeplatzpro-backend
     env: node
     plan: starter
-    buildCommand: cd backend && npm install && npm run build
-    startCommand: cd backend && npm run start:prod
+    buildCommand: cd ai-it-solar/backend && npm install && npm run build
+    startCommand: cd ai-it-solar/backend && npm run start:prod || npm start
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
@@ -25,15 +25,15 @@ services:
   - type: web
     name: aicodeplatzpro-frontend
     env: static
-    buildCommand: cd frontend && npm install && npm run build
-    staticPublishPath: frontend/dist
+    buildCommand: cd ai-it-solar/frontend && npm install && npm run build
+    staticPublishPath: ai-it-solar/frontend/dist
     envVars:
       - key: VITE_API_URL
         value: https://aicodeplatzpro-backend.onrender.com/api
 
-# Database
+# Database with new plan
 databases:
   - name: aicodeplatzpro-db
     databaseName: ai_solar_production
     user: ai_solar_user
-    plan: starter
+    plan: free
