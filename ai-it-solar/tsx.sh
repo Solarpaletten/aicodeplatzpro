@@ -1,3 +1,5 @@
+# Создаем корневой package.json для workspace
+cat > package.json << 'EOF'
 {
   "name": "ai-it-solar-pro",
   "version": "1.0.0",
@@ -28,3 +30,19 @@
   "author": "AI IT Solar Team",
   "license": "MIT"
 }
+EOF
+
+# Проверяем структуру
+echo "📁 Project structure:"
+echo "Root:"
+ls -la | grep -E "(package\.json|frontend|backend|render\.yaml)"
+
+echo "Frontend:"
+ls -la frontend/
+
+echo "Backend:"
+ls -la backend/ | grep -E "(package\.json|src)"
+
+# Теперь деплоим
+echo "🚀 Ready to deploy!"
+./deploy.sh

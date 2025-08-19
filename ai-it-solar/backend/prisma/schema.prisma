@@ -1,4 +1,3 @@
-// 🚀 AI IT Solar - Database Schema
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,17 +12,12 @@ model User {
   email     String   @unique
   username  String   @unique
   name      String?
-  avatar    String?
-  githubId  String?  @unique
-  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
-  // Relations
-  projects    Project[]
-  reviews     Review[]
-  comments    Comment[]
-  teamMembers TeamMember[]
+  projects Project[]
+  reviews  Review[]
+  comments Comment[]
   
   @@map("users")
 }
@@ -39,12 +33,9 @@ model Project {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
-  // Relations
   userId   String
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user     User      @relation(fields: [userId], references: [id])
   reviews  Review[]
-  teamId   String?
-  team     Team?     @relation(fields: [teamId], references: [id])
   
   @@map("projects")
 }
@@ -59,19 +50,11 @@ model Review {
   riskLevel     RiskLevel   @default(LOW)
   status        ReviewStatus @default(PENDING)
   
-  // Analysis results
-  analysisData  Json?
-  aiSummary     String?
-  linesChanged  Int?
-  functionsChanged Int?
-  importsChanged   Int?
-  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
-  // Relations
   projectId String
-  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project   Project   @relation(fields: [projectId], references: [id])
   userId    String
   user      User      @relation(fields: [userId], references: [id])
   comments  Comment[]
@@ -87,44 +70,12 @@ model Comment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
-  // Relations
   reviewId String
-  review   Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  review   Review @relation(fields: [reviewId], references: [id])
   userId   String
   user     User   @relation(fields: [userId], references: [id])
   
   @@map("comments")
-}
-
-model Team {
-  id          String @id @default(cuid())
-  name        String
-  description String?
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  // Relations
-  projects Project[]
-  members  TeamMember[]
-  
-  @@map("teams")
-}
-
-model TeamMember {
-  id   String   @id @default(cuid())
-  role TeamRole @default(MEMBER)
-  
-  joinedAt DateTime @default(now())
-  
-  // Relations
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  teamId String
-  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  
-  @@unique([userId, teamId])
-  @@map("team_members")
 }
 
 enum RiskLevel {
@@ -139,10 +90,4 @@ enum ReviewStatus {
   IN_PROGRESS
   APPROVED
   REJECTED
-}
-
-enum TeamRole {
-  OWNER
-  ADMIN
-  MEMBER
 }
