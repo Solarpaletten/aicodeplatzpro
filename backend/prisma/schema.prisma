@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -14,66 +14,66 @@ model User {
   name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-  projects Project[]
-  reviews  Review[]
-  comments Comment[]
-  
+
+  projects  Project[]
+  reviews   Review[]
+  comments  Comment[]
+
   @@map("users")
 }
 
 model Project {
-  id          String  @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
-  description String?
+  description String?  @db.Text
   githubUrl   String?
   language    String?
-  isPrivate   Boolean @default(false)
-  
+  isPrivate   Boolean  @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   userId   String
   user     User      @relation(fields: [userId], references: [id])
   reviews  Review[]
-  
+
   @@map("projects")
 }
 
 model Review {
-  id            String      @id @default(cuid())
-  title         String
-  description   String?
-  oldCode       String
-  newCode       String
-  language      String
-  riskLevel     String      @default("LOW")
-  status        String      @default("PENDING")
-  
+  id          String   @id @default(cuid())
+  title       String
+  description String?  @db.Text
+  oldCode     String   @db.Text
+  newCode     String   @db.Text
+  language    String
+  riskLevel   String   @default("LOW")
+  status      String   @default("PENDING")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   projectId String
-  project   Project   @relation(fields: [projectId], references: [id])
+  project   Project  @relation(fields: [projectId], references: [id])
   userId    String
-  user      User      @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
   comments  Comment[]
-  
+
   @@map("reviews")
 }
 
 model Comment {
-  id       String @id @default(cuid())
-  content  String
+  id         String   @id @default(cuid())
+  content    String   @db.Text
   lineNumber Int?
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   reviewId String
   review   Review @relation(fields: [reviewId], references: [id])
   userId   String
   user     User   @relation(fields: [userId], references: [id])
-  
+
   @@map("comments")
 }
